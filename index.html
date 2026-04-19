@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WheelSpin — Decide Anything Instantly</title>
+    <meta
+      name="description"
+      content="Create a custom wheel, spin it, share the link. The simplest way to pick something at random."
+    />
+    <meta property="og:title" content="WheelSpin — Decide Anything Instantly" />
+    <meta
+      property="og:description"
+      content="Create a custom wheel, spin it, share the link."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="" />
+    <meta property="og:image" content="og-image.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Figtree:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="app">
+      <a href="#main-content" class="skip-link">Skip to main content</a>
+
+      <main id="main-content" class="main-layout" tabindex="-1">
+        <!-- Left: entries panel -->
+        <section class="entries-panel" aria-label="Wheel entries">
+          <div class="panel-logo">
+            <svg
+              width="26"
+              height="26"
+              viewBox="0 0 32 32"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                class="brand-mark-accent"
+                d="M16 16L16 2A14 14 0 0 1 30 16Z"
+              />
+              <path
+                class="brand-mark-primary"
+                d="M16 16L30 16A14 14 0 0 1 16 30Z"
+              />
+              <path
+                class="brand-mark-accent"
+                d="M16 16L16 30A14 14 0 0 1 2 16Z"
+              />
+              <path
+                class="brand-mark-primary"
+                d="M16 16L2 16A14 14 0 0 1 16 2Z"
+              />
+              <circle class="brand-mark-center" cx="16" cy="16" r="3.5" />
+            </svg>
+            <h1 class="logo">Wheel<span class="logo-accent">Spin</span></h1>
+          </div>
+
+          <div class="entries-header">
+            <h2 class="entries-title">Your choices</h2>
+            <div class="entries-actions">
+              <button
+                id="share-btn"
+                class="btn-share-header"
+                disabled
+                title="Add at least 2 choices to share"
+                aria-label="Share wheel"
+              >
+                <svg
+                  class="share-icon"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                >
+                  <path
+                    d="M13.5 6a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5zM4.5 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5zM13.5 16.5a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5zM6.44 10.24l5.13 2.77M11.56 5l-5.12 2.75"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <svg
+                  class="check-icon"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                >
+                  <path
+                    d="M4 9.5l3.5 3.5L14 5"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <span class="share-label">Share</span>
+              </button>
+              <button
+                id="clear-all-btn"
+                class="btn-text"
+                aria-label="Remove all entries"
+              >
+                Clear all
+              </button>
+              <button
+                id="mute-btn"
+                class="btn-mute"
+                aria-label="Mute sounds"
+                title="Mute sounds"
+              >
+                <svg
+                  class="icon-sound-on"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M3 6.5H1.5a.5.5 0 00-.5.5v4a.5.5 0 00.5.5H3l4 3V3.5L3 6.5z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M11 5.5a5 5 0 010 7M13.5 3a8 8 0 010 12"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                <svg
+                  class="icon-sound-off"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M3 6.5H1.5a.5.5 0 00-.5.5v4a.5.5 0 00.5.5H3l4 3V3.5L3 6.5z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M12 6.5l4 5M16 6.5l-4 5"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                <span class="mute-label">Sound on</span>
+              </button>
+            </div>
+          </div>
+
+          <label for="entry-input" class="entry-input-label"
+            >Add a choice</label
+          >
+          <div class="entry-input-row">
+            <input
+              type="text"
+              id="entry-input"
+              class="entry-input"
+              placeholder="Pizza night"
+              maxlength="40"
+              autocomplete="off"
+              aria-describedby="entry-hint"
+            />
+            <button id="add-entry-btn" class="btn-add" aria-label="Add entry">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path
+                  d="M10 4v12M4 10h12"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+          </div>
+          <p id="entry-hint" class="entry-hint">
+            Type one choice, then press Enter or select Add. You can add up to
+            30 choices.
+          </p>
+          <p
+            id="entry-error"
+            class="entry-error"
+            role="alert"
+            aria-live="assertive"
+            hidden
+          ></p>
+
+          <ul
+            id="entries-list"
+            class="entries-list"
+            role="list"
+            aria-label="Wheel entries list"
+          ></ul>
+        </section>
+
+        <!-- Center: the wheel -->
+        <section class="wheel-area" aria-label="Spinning wheel">
+          <div class="wheel-container">
+            <div class="wheel-pointer" aria-hidden="true"></div>
+            <canvas
+              id="wheel-canvas"
+              width="580"
+              height="580"
+              role="img"
+              aria-label="Empty wheel. Add choices to spin."
+              >Spinning wheel with your choices. Use the entries panel to add or
+              remove options.</canvas
+            >
+          </div>
+          <!-- Accessible text alternative for screen readers -->
+          <ul
+            id="wheel-choices-list"
+            class="sr-only"
+            aria-label="Wheel choices"
+          ></ul>
+          <button id="spin-btn" class="btn-spin" disabled aria-label="Spin">
+            SPIN
+          </button>
+          <p id="spin-status" class="spin-status">
+            Add at least 2 choices to enable Spin and Share.
+          </p>
+        </section>
+      </main>
+
+      <!-- Result overlay -->
+      <dialog
+        id="result-overlay"
+        class="result-overlay"
+        aria-labelledby="result-label"
+        aria-describedby="result-text"
+      >
+        <div class="result-card">
+          <button
+            id="result-close-btn"
+            class="btn-result-close"
+            aria-label="Close result"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M4 4l8 8M12 4l-8 8"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+          <p id="result-label" class="result-label">The wheel chose</p>
+          <p id="result-text" class="result-text"></p>
+          <div class="result-actions">
+            <button id="result-spin-again" class="btn-spin-again">
+              Spin again
+            </button>
+            <button
+              id="result-share-btn"
+              class="btn-result-share"
+              aria-label="Share wheel"
+            >
+              <svg
+                class="share-icon"
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+              >
+                <path
+                  d="M13.5 6a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5zM4.5 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5zM13.5 16.5a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5zM6.44 10.24l5.13 2.77M11.56 5l-5.12 2.75"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <svg
+                class="check-icon"
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+              >
+                <path
+                  d="M4 9.5l3.5 3.5L14 5"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <span class="share-label">Share</span>
+            </button>
+          </div>
+        </div>
+      </dialog>
+
+      <!-- Share toast -->
+      <div id="share-toast" class="share-toast" hidden>
+        Link copied to clipboard!
+      </div>
+
+      <!-- Undo toast (for Clear all) -->
+      <div id="undo-toast" class="undo-toast" hidden>
+        <span id="undo-toast-text">All entries cleared</span>
+        <button id="undo-btn" class="btn-undo" aria-label="Undo clear all">
+          Undo
+        </button>
+      </div>
+
+      <!-- localStorage restore banner -->
+      <div id="restore-banner" class="restore-banner" hidden>
+        <span>Restore your last wheel?</span>
+        <button id="restore-btn" class="btn-restore">Restore</button>
+        <button
+          id="dismiss-restore-btn"
+          class="btn-dismiss-restore"
+          aria-label="Dismiss restore"
+        >
+          Dismiss
+        </button>
+      </div>
+
+      <!-- Screen reader announcements -->
+      <div id="sr-status" class="sr-only" aria-live="polite"></div>
+      <div id="sr-alert" class="sr-only" aria-live="assertive"></div>
+    </div>
+
+    <script src="index.js"></script>
+  </body>
+</html>
