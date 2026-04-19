@@ -1000,8 +1000,15 @@
     const twitterDesc = document.querySelector(
       'meta[name="twitter:description"]',
     );
+    const twitterImageAlt = document.querySelector(
+      'meta[name="twitter:image:alt"]',
+    );
+    const ogImageAlt = document.querySelector('meta[property="og:image:alt"]');
     const canonicalUrl = "https://www.wheelspin.cc/";
     const shareUrl = buildShareURL() || canonicalUrl;
+    const imageAlt = hasEntries
+      ? `WheelSpin random picker for ${preview}${suffix}.`
+      : "WheelSpin logo mark with four blue and orange wheel segments.";
 
     if (descriptionMeta) descriptionMeta.setAttribute("content", description);
     if (canonicalLink) canonicalLink.setAttribute("href", canonicalUrl);
@@ -1016,8 +1023,10 @@
     if (ogTitle) ogTitle.setAttribute("content", title);
     if (ogDesc) ogDesc.setAttribute("content", description);
     if (ogUrl) ogUrl.setAttribute("content", hasEntries ? shareUrl : canonicalUrl);
+    if (ogImageAlt) ogImageAlt.setAttribute("content", imageAlt);
     if (twitterTitle) twitterTitle.setAttribute("content", title);
     if (twitterDesc) twitterDesc.setAttribute("content", description);
+    if (twitterImageAlt) twitterImageAlt.setAttribute("content", imageAlt);
   }
 
   async function shareWheel(triggerBtn) {
