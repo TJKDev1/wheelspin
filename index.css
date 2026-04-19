@@ -359,9 +359,17 @@ ul {
 .panel-intro {
   margin-bottom: var(--space-5);
   max-width: 34ch;
-  font-size: var(--text-sm);
+  font-size: 0.975rem;
+  line-height: 1.6;
   color: var(--color-text-secondary);
   text-wrap: balance;
+}
+
+.panel-intro-lead {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--color-text);
+  font-weight: 600;
 }
 
 .brand-mark-primary {
