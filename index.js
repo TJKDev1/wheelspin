@@ -971,20 +971,53 @@
   }
 
   function updatePageMeta() {
-    if (entries.length === 0) return;
+    const defaultTitle = "Spin the Wheel Online | WheelSpin Random Picker";
+    const defaultDescription =
+      "Spin the wheel online with a fast, shareable random picker. Create a custom decision wheel for teams, games, giveaways, lunches, chores, and more.";
+    const hasEntries = entries.length > 0;
+    const preview = hasEntries ? entries.slice(0, 3).join(", ") : "";
+    const suffix = hasEntries
+      ? entries.length > 3
+        ? `, and ${entries.length - 3} more`
+        : ""
+      : "";
+    const title = hasEntries
+      ? `Spin the Wheel: ${preview}${suffix} | WheelSpin`
+      : defaultTitle;
+    const description = hasEntries
+      ? `Spin the wheel between ${preview}${suffix}. Create your own random picker and share it with one link.`
+      : defaultDescription;
 
-    // Dynamic title
-    const preview = entries.slice(0, 3).join(", ");
-    const suffix = entries.length > 3 ? `, and ${entries.length - 3} more` : "";
-    const title = `WheelSpin — ${preview}${suffix}`;
     document.title = title;
 
-    // Update OG meta tags
+    const descriptionMeta = document.querySelector('meta[name="description"]');
+    const canonicalLink = document.querySelector('link[rel="canonical"]');
+    const robotsMeta = document.querySelector('meta[name="robots"]');
     const ogTitle = document.querySelector('meta[property="og:title"]');
     const ogDesc = document.querySelector('meta[property="og:description"]');
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    const twitterDesc = document.querySelector(
+      'meta[name="twitter:description"]',
+    );
+    const canonicalUrl = "https://wheelspin.cc/";
+    const shareUrl = buildShareURL() || canonicalUrl;
+
+    if (descriptionMeta) descriptionMeta.setAttribute("content", description);
+    if (canonicalLink) canonicalLink.setAttribute("href", canonicalUrl);
+    if (robotsMeta) {
+      robotsMeta.setAttribute(
+        "content",
+        hasEntries
+          ? "noindex,follow,max-image-preview:large"
+          : "index,follow,max-image-preview:large",
+      );
+    }
     if (ogTitle) ogTitle.setAttribute("content", title);
-    if (ogDesc)
-      ogDesc.setAttribute("content", `Spin the wheel: ${preview}${suffix}`);
+    if (ogDesc) ogDesc.setAttribute("content", description);
+    if (ogUrl) ogUrl.setAttribute("content", hasEntries ? shareUrl : canonicalUrl);
+    if (twitterTitle) twitterTitle.setAttribute("content", title);
+    if (twitterDesc) twitterDesc.setAttribute("content", description);
   }
 
   async function shareWheel(triggerBtn) {

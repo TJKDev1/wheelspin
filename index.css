@@ -356,6 +356,14 @@ ul {
   margin-bottom: var(--space-5);
 }
 
+.panel-intro {
+  margin-bottom: var(--space-5);
+  max-width: 34ch;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  text-wrap: balance;
+}
+
 .brand-mark-primary {
   fill: var(--color-primary);
 }
@@ -1442,6 +1450,11 @@ ul {
 
   .panel-logo {
     margin-bottom: var(--space-2);
+  }
+
+  .panel-intro {
+    margin-bottom: var(--space-4);
+    max-width: none;
   }
 
   .entries-header {
