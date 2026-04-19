@@ -1000,7 +1000,7 @@
     const twitterDesc = document.querySelector(
       'meta[name="twitter:description"]',
     );
-    const canonicalUrl = "https://wheelspin.cc/";
+    const canonicalUrl = "https://www.wheelspin.cc/";
     const shareUrl = buildShareURL() || canonicalUrl;
 
     if (descriptionMeta) descriptionMeta.setAttribute("content", description);
