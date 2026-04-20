@@ -2,6 +2,8 @@ import { announceStatus } from "./a11y";
 import { buildSharePath, decodeEntriesFromParam, exceedsShareURLLimit } from "./lib/share";
 import { state } from "./state";
 
+let isSharedLanding = false;
+
 export function syncURL(srStatus: HTMLElement): void {
   const previousShareOverflow = state.shareOverflow;
 
@@ -55,6 +57,7 @@ export function loadFromURL(): void {
   }
 
   const encodedEntries = params.get("w");
+  isSharedLanding = encodedEntries !== null;
   if (!encodedEntries) return;
 
   state.entries = decodeEntriesFromParam(encodedEntries);
@@ -91,6 +94,7 @@ export function updatePageMeta(): void {
   const descriptionMeta = document.querySelector('meta[name="description"]');
   const canonicalLink = document.querySelector('link[rel="canonical"]');
   const robotsMeta = document.querySelector('meta[name="robots"]');
+  const googlebotMeta = document.querySelector('meta[name="googlebot"]');
   const ogTitle = document.querySelector('meta[property="og:title"]');
   const ogDesc = document.querySelector('meta[property="og:description"]');
   const ogUrl = document.querySelector('meta[property="og:url"]');
@@ -106,14 +110,13 @@ export function updatePageMeta(): void {
 
   if (descriptionMeta) descriptionMeta.setAttribute("content", description);
   if (canonicalLink) canonicalLink.setAttribute("href", canonicalUrl);
+  const robotsContent = isSharedLanding && hasEntries
+    ? "noindex,follow,max-image-preview:large"
+    : "index,follow,max-image-preview:large";
   if (robotsMeta) {
-    robotsMeta.setAttribute(
-      "content",
-      hasEntries
-        ? "noindex,follow,max-image-preview:large"
-        : "index,follow,max-image-preview:large",
-    );
+    robotsMeta.setAttribute("content", robotsContent);
   }
+  if (googlebotMeta) googlebotMeta.setAttribute("content", robotsContent);
   if (ogTitle) ogTitle.setAttribute("content", title);
   if (ogDesc) ogDesc.setAttribute("content", description);
   if (ogUrl) ogUrl.setAttribute("content", hasEntries ? shareUrl : canonicalUrl);

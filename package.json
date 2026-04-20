@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "node ./node_modules/vite/bin/vite.js",
-    "build": "node ./node_modules/vite/bin/vite.js build && cp favicon.svg og-image.avif og-image.png og-image.svg og-image.webp robots.txt sitemap.xml dist/",
+    "build": "node ./node_modules/vite/bin/vite.js build && cp apple-touch-icon.png favicon-16x16.png favicon-32x32.png favicon-48x48.png favicon.svg icon-192.png icon-512.png og-image.avif og-image.png og-image.svg og-image.webp robots.txt sitemap.xml site.webmanifest dist/ && node ./scripts/prepare-seo-assets.mjs",
     "preview": "node ./node_modules/vite/bin/vite.js preview --host 127.0.0.1 --port 4173",
     "typecheck": "node ./node_modules/typescript/bin/tsc -p tsconfig.app.json --noEmit && node ./node_modules/typescript/bin/tsc -p tsconfig.node.json --noEmit",
     "test:e2e": "node ./node_modules/@playwright/test/cli.js test",
