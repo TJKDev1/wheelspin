@@ -7,17 +7,21 @@ A clean, purposeful, web-based random decision-making tool.
 **WheelSpin** is a single-page application (SPA) that allows users to create custom spinning wheels to make random choices. It prioritizes a professional and intentional aesthetic over "game-like" or "childish" designs.
 
 - **Main Technologies:**
-    - **Frontend:** Vanilla HTML5, CSS3, and JavaScript (ES6+).
+    - **Frontend:** Vanilla HTML5, CSS3, and TypeScript via Vite.
     - **Graphics:** HTML5 Canvas API for rendering the wheel and handling spin physics.
     - **Styling:** Modern CSS using the **OKLCH** color system and CSS variables for theming (including Dark Mode and High Contrast Mode support).
     - **State Management:** URL parameters for sharing wheels and `localStorage` for persistent user data.
 
 ## Building and Running
 
-This is a static web project with no build step required.
+This is browser-native web project with Vite-based dev and build workflow.
 
-- **Running Locally:** Open `index.html` directly in any modern web browser or use a simple static file server (e.g., `npx serve .` or Python's `http.server`).
-- **Testing:** No automated testing suite is currently configured. Manual verification of the canvas rendering and spin logic is required.
+- **Install:** `npm install`
+- **Dev Server:** `npm run dev`
+- **Production Build:** `npm run build`
+- **Preview Build:** `npm run preview`
+- **Type Check:** `npm run typecheck`
+- **Testing:** `npm run test:e2e` for Playwright smoke coverage, plus manual verification of canvas rendering and spin/audio behavior.
 
 ## Development Conventions
 
@@ -28,10 +32,10 @@ This is a static web project with no build step required.
 
 ### Code Structure
 - **Vanilla First:** Do not introduce heavy frameworks (React, Vue, etc.) or utility-first CSS libraries (Tailwind) unless explicitly requested. Maintain the lightweight, zero-dependency nature of the project.
-- **JavaScript:** Logic is contained in `index.js`, organized by functional sections (DOM refs, State, Canvas Setup, Spin Physics, etc.). Use the established IIFE pattern to avoid global scope pollution.
+- **TypeScript Modules:** Runtime entrypoint is `src/main.ts`. Keep DOM access centralized in `src/dom.ts`, shared state in `src/state.ts`, pure helpers in `src/lib/`, and feature logic in focused modules.
 - **Canvas:** The wheel is pre-rendered to an offscreen canvas for performance when entries haven't changed.
-- **Accessibility:** Maintain ARIA labels, screen reader announcements (via `#sr-announcement`), and semantic HTML structures. Ensure the `canvas` has a proper text alternative.
+- **Accessibility:** Maintain ARIA labels, screen reader announcements via `#sr-status` and `#sr-alert`, and semantic HTML structures. Ensure `canvas` keeps proper text alternative.
 
 ### Sharing & Persistence
-- **URL Sync:** The application state (entries) is serialized into the URL hash to allow for easy sharing.
+- **URL Sync:** Application state uses `?w=` query param with pipe-separated, `encodeURIComponent`-escaped entries. Legacy base64 loading remains fallback path.
 - **Persistence:** Use the `wheelspin_entries` key in `localStorage` to save and restore user wheels.

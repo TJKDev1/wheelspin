@@ -1,0 +1,18 @@
+{
+  "name": "wheelspin",
+  "private": true,
+  "scripts": {
+    "dev": "node ./node_modules/vite/bin/vite.js",
+    "build": "node ./node_modules/vite/bin/vite.js build && cp favicon.svg og-image.avif og-image.png og-image.svg og-image.webp robots.txt sitemap.xml dist/",
+    "preview": "node ./node_modules/vite/bin/vite.js preview --host 127.0.0.1 --port 4173",
+    "typecheck": "node ./node_modules/typescript/bin/tsc -p tsconfig.app.json --noEmit && node ./node_modules/typescript/bin/tsc -p tsconfig.node.json --noEmit",
+    "test:e2e": "node ./node_modules/@playwright/test/cli.js test",
+    "test:e2e:full": "PW_INCLUDE_WEBKIT=1 node ./node_modules/@playwright/test/cli.js test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.2",
+    "@types/node": "^24.7.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12"
+  }
+}
