@@ -9,6 +9,7 @@ interface EntryRuntimeRefs {
   entriesPanel: HTMLElement;
   clearAllBtn: HTMLButtonElement;
   shareBtn: HTMLButtonElement;
+  shareStatus: HTMLElement;
   resultShareBtn: HTMLButtonElement;
   spinBtn: HTMLButtonElement;
   spinStatus: HTMLElement;
@@ -75,25 +76,39 @@ function updateShareState(refs: EntryRuntimeRefs): void {
     : canShare
       ? "Share wheel"
       : "Add at least 2 choices to share";
+  const shareStatus = state.shareOverflow
+    ? "Share off. Link too long for this wheel."
+    : state.entries.length < 2
+      ? "Share unlocks at 2 choices."
+      : "";
 
   refs.entriesPanel.classList.toggle("has-entries", hasEntries);
   refs.entriesPanel.classList.toggle("can-share", canShare);
 
   refs.clearAllBtn.hidden = !hasEntries;
-  refs.shareBtn.hidden = !canShare;
   refs.shareBtn.disabled = !canShare;
   refs.shareBtn.title = shareTitle;
   refs.resultShareBtn.disabled = !canShare;
   refs.resultShareBtn.title = shareTitle;
 
   refs.spinBtn.disabled = state.entries.length < 2;
+  refs.shareStatus.hidden = shareStatus === "" || !hasEntries;
+  refs.shareStatus.textContent = shareStatus;
+  if (refs.shareStatus.hidden) {
+    refs.shareBtn.removeAttribute("aria-describedby");
+  } else {
+    refs.shareBtn.setAttribute("aria-describedby", "share-status");
+  }
 
   if (state.entries.length < 2) {
-    refs.spinStatus.textContent = "Add at least 2 choices to enable Spin and Share.";
+    refs.spinStatus.hidden = false;
+    refs.spinStatus.textContent = "Add 2 choices to spin.";
   } else if (state.shareOverflow) {
-    refs.spinStatus.textContent = "Spin is ready. Share is off until you remove a few choices.";
+    refs.spinStatus.hidden = false;
+    refs.spinStatus.textContent = "Wheel ready. Share off for this set.";
   } else {
-    refs.spinStatus.textContent = "Spin is ready. Press Space or select Spin. Share link is ready.";
+    refs.spinStatus.hidden = false;
+    refs.spinStatus.textContent = "Drag to place wheel. Flick or press Spin to launch.";
   }
 }
 

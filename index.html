@@ -126,9 +126,8 @@
             <h1 class="logo">Wheel<span class="logo-accent">Spin</span></h1>
           </div>
           <p class="panel-intro">
-            <span class="panel-intro-lead">Build a wheel in seconds.</span>
-            Use it for team picks, giveaways, lunch spots, games, and any other
-            quick decision.
+            <span class="panel-intro-lead">Build wheel. Spin when ready.</span>
+            Quick picker for teams, lunch spots, giveaways, and everyday calls.
           </p>
 
           <div class="entries-header">
@@ -228,6 +227,7 @@
               </button>
             </div>
           </div>
+          <p id="share-status" class="share-status" hidden></p>
 
           <label for="entry-input" class="entry-input-label"
             >Add a choice</label
@@ -254,8 +254,7 @@
             </button>
           </div>
           <p id="entry-hint" class="entry-hint">
-            Type one choice, then press Enter or select Add. You can add up to
-            30 choices.
+            Press Enter to add. Up to 30 choices.
           </p>
           <p
             id="entry-error"
@@ -296,9 +295,7 @@
           <button id="spin-btn" class="btn-spin" disabled aria-label="Spin">
             SPIN
           </button>
-          <p id="spin-status" class="spin-status">
-            Add at least 2 choices to enable Spin and Share.
-          </p>
+          <p id="spin-status" class="spin-status">Add 2 choices to spin.</p>
         </section>
       </main>
 
@@ -330,7 +327,7 @@
               />
             </svg>
           </button>
-          <p id="result-label" class="result-label">The wheel chose</p>
+          <p id="result-label" class="result-label">Winner</p>
           <p id="result-text" class="result-text"></p>
           <div class="result-actions">
             <button id="result-spin-again" class="btn-spin-again">

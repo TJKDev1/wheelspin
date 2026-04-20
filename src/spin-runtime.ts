@@ -2,6 +2,7 @@ import { state } from "./state";
 
 interface SpinRefs {
   canvas: HTMLCanvasElement;
+  wheelContainer: HTMLElement;
   spinBtn: HTMLButtonElement;
   wheelPointer: HTMLElement;
   muteBtn: HTMLButtonElement;
@@ -11,6 +12,38 @@ interface SpinRuntimeOptions {
   refs: SpinRefs;
   drawWheel: () => void;
   showResult: () => void;
+}
+
+type DragRuntimeOptions = Pick<SpinRuntimeOptions, "refs" | "drawWheel">;
+
+const TWO_PI = 2 * Math.PI;
+const FLICK_THRESHOLD = 1.2;
+const MAX_FLICK_VELOCITY = 22;
+
+function normaliseAngle(angle: number): number {
+  return ((angle % TWO_PI) + TWO_PI) % TWO_PI;
+}
+
+function normaliseAngleDelta(delta: number): number {
+  if (delta > Math.PI) return delta - TWO_PI;
+  if (delta < -Math.PI) return delta + TWO_PI;
+  return delta;
+}
+
+function getPointerAngle(canvas: HTMLCanvasElement, clientX: number, clientY: number): number {
+  const rect = canvas.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  return Math.atan2(clientY - cy, clientX - cx);
+}
+
+function resetDragState(wheelContainer?: HTMLElement): void {
+  state.dragging = false;
+  state.dragPointerId = null;
+  state.lastDragAngle = 0;
+  state.lastDragAt = 0;
+  state.dragVelocity = 0;
+  wheelContainer?.classList.remove("dragging");
 }
 
 function getAudioCtor(): typeof AudioContext | null {
@@ -123,8 +156,8 @@ function tickPointer(
   currentAngle: number,
   angularVelocity: number,
 ): void {
-  const sliceAngle = (2 * Math.PI) / entriesLength;
-  const normalised = ((-currentAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+  const sliceAngle = TWO_PI / entriesLength;
+  const normalised = ((-currentAngle % TWO_PI) + TWO_PI) % TWO_PI;
   const withinSlice = normalised % sliceAngle;
   const proximity = Math.min(withinSlice, sliceAngle - withinSlice) / sliceAngle;
   const currentSegment = Math.floor(normalised / sliceAngle);
@@ -141,9 +174,10 @@ function tickPointer(
 function finishSpin(options: SpinRuntimeOptions): void {
   state.spinning = false;
   state.angularVelocity = 0;
+  state.animFrameId = null;
   options.refs.spinBtn.disabled = false;
   options.refs.spinBtn.setAttribute("aria-label", "Spin");
-  options.refs.canvas.parentElement?.classList.remove("spinning");
+  options.refs.wheelContainer.classList.remove("spinning");
 }
 
 function tick(options: SpinRuntimeOptions): void {
@@ -154,8 +188,7 @@ function tick(options: SpinRuntimeOptions): void {
   }
 
   state.angularVelocity *= 0.985;
-  state.currentAngle += state.angularVelocity * (1 / 60);
-  state.currentAngle %= 2 * Math.PI;
+  state.currentAngle = normaliseAngle(state.currentAngle + state.angularVelocity * (1 / 60));
 
   options.drawWheel();
   tickPointer(
@@ -165,7 +198,7 @@ function tick(options: SpinRuntimeOptions): void {
     state.angularVelocity,
   );
 
-  if (state.angularVelocity < 0.005) {
+  if (Math.abs(state.angularVelocity) < 0.005) {
     finishSpin(options);
     playStopSound();
     options.showResult();
@@ -175,25 +208,100 @@ function tick(options: SpinRuntimeOptions): void {
   state.animFrameId = requestAnimationFrame(() => tick(options));
 }
 
-export function startSpin(options: SpinRuntimeOptions): void {
-  if (state.spinning || state.entries.length < 2) return;
+function launchSpin(options: SpinRuntimeOptions, angularVelocity: number): void {
+  if (state.spinning || state.dragging || state.entries.length < 2) return;
 
   state.spinning = true;
+  state.angularVelocity = angularVelocity;
+  state.lastTickSegment = -1;
   options.refs.spinBtn.disabled = true;
   options.refs.spinBtn.setAttribute("aria-label", "Spinning");
-  options.refs.canvas.parentElement?.classList.add("spinning");
+  options.refs.wheelContainer.classList.add("spinning");
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    state.currentAngle = Math.random() * 2 * Math.PI;
     options.drawWheel();
     finishSpin(options);
     options.showResult();
     return;
   }
 
-  state.angularVelocity = 15 + Math.random() * 15;
-  state.lastTickSegment = -1;
   tick(options);
+}
+
+export function startSpin(options: SpinRuntimeOptions): void {
+  if (state.spinning || state.dragging || state.entries.length < 2) return;
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    state.currentAngle = Math.random() * TWO_PI;
+    launchSpin(options, 0);
+    return;
+  }
+
+  launchSpin(options, 15 + Math.random() * 15);
+}
+
+export function startWheelDrag(options: DragRuntimeOptions, event: PointerEvent): void {
+  if (event.button !== 0 || state.spinning || state.entries.length < 2) return;
+  if (state.dragPointerId !== null && state.dragPointerId !== event.pointerId) return;
+
+  state.dragPointerId = event.pointerId;
+  state.dragging = true;
+  state.lastDragAngle = getPointerAngle(options.refs.canvas, event.clientX, event.clientY);
+  state.lastDragAt = event.timeStamp;
+  state.dragVelocity = 0;
+  options.refs.wheelContainer.classList.add("dragging");
+  options.refs.wheelContainer.setPointerCapture(event.pointerId);
+  event.preventDefault();
+}
+
+export function moveWheelDrag(options: DragRuntimeOptions, event: PointerEvent): void {
+  if (!state.dragging || state.dragPointerId !== event.pointerId) return;
+
+  const nextAngle = getPointerAngle(options.refs.canvas, event.clientX, event.clientY);
+  const delta = normaliseAngleDelta(nextAngle - state.lastDragAngle);
+  const elapsedMs = Math.max(1, event.timeStamp - state.lastDragAt);
+  const nextVelocity = delta / (elapsedMs / 1000);
+
+  state.currentAngle = normaliseAngle(state.currentAngle + delta);
+  state.dragVelocity = state.dragVelocity * 0.2 + nextVelocity * 0.8;
+  state.lastDragAngle = nextAngle;
+  state.lastDragAt = event.timeStamp;
+  options.drawWheel();
+  event.preventDefault();
+}
+
+export function endWheelDrag(options: SpinRuntimeOptions, event: PointerEvent): void {
+  if (state.dragPointerId !== event.pointerId) return;
+
+  if (options.refs.wheelContainer.hasPointerCapture(event.pointerId)) {
+    options.refs.wheelContainer.releasePointerCapture(event.pointerId);
+  }
+
+  const releaseVelocity = Math.max(
+    -MAX_FLICK_VELOCITY,
+    Math.min(MAX_FLICK_VELOCITY, state.dragVelocity),
+  );
+
+  resetDragState(options.refs.wheelContainer);
+
+  if (Math.abs(releaseVelocity) >= FLICK_THRESHOLD) {
+    launchSpin(options, releaseVelocity);
+  } else {
+    options.drawWheel();
+  }
+
+  event.preventDefault();
+}
+
+export function cancelWheelDrag(options: DragRuntimeOptions, event?: PointerEvent): void {
+  if (event && state.dragPointerId !== event.pointerId) return;
+
+  if (event && options.refs.wheelContainer.hasPointerCapture(event.pointerId)) {
+    options.refs.wheelContainer.releasePointerCapture(event.pointerId);
+  }
+
+  resetDragState(options.refs.wheelContainer);
+  options.drawWheel();
 }
 
 export function updateMuteButton(muteBtn: HTMLButtonElement): void {
@@ -224,4 +332,5 @@ export function cleanupSpinRuntime(): void {
   if (state.audioCtx) {
     state.audioCtx.close();
   }
+  resetDragState();
 }

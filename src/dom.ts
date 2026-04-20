@@ -19,12 +19,14 @@ function getCanvasContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
 
 export const dom = {
   canvas: getRequiredElement<HTMLCanvasElement>("#wheel-canvas"),
+  wheelContainer: getRequiredElement<HTMLElement>(".wheel-container"),
   entryInput: getRequiredElement<HTMLInputElement>("#entry-input"),
   addBtn: getRequiredElement<HTMLButtonElement>("#add-entry-btn"),
   clearAllBtn: getRequiredElement<HTMLButtonElement>("#clear-all-btn"),
   entriesList: getRequiredElement<HTMLOListElement>("#entries-list"),
   spinBtn: getRequiredElement<HTMLButtonElement>("#spin-btn"),
   shareBtn: getRequiredElement<HTMLButtonElement>("#share-btn"),
+  shareStatus: getRequiredElement<HTMLElement>("#share-status"),
   resultOverlay: getRequiredElement<HTMLDialogElement>("#result-overlay"),
   resultText: getRequiredElement<HTMLElement>("#result-text"),
   resultSpinAgain: getRequiredElement<HTMLButtonElement>("#result-spin-again"),

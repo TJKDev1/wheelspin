@@ -1,6 +1,7 @@
 export interface AppState {
   entries: string[];
   spinning: boolean;
+  dragging: boolean;
   currentAngle: number;
   angularVelocity: number;
   animFrameId: number | null;
@@ -19,6 +20,10 @@ export interface AppState {
   offscreenEntriesHash: string;
   undoEntries: string[] | null;
   errorTimer: ReturnType<typeof setTimeout> | null;
+  dragPointerId: number | null;
+  lastDragAngle: number;
+  lastDragAt: number;
+  dragVelocity: number;
 }
 
 function loadMutedPreference(): boolean {
@@ -32,6 +37,7 @@ function loadMutedPreference(): boolean {
 export const state: AppState = {
   entries: [],
   spinning: false,
+  dragging: false,
   currentAngle: 0,
   angularVelocity: 0,
   animFrameId: null,
@@ -50,4 +56,8 @@ export const state: AppState = {
   offscreenEntriesHash: "",
   undoEntries: null,
   errorTimer: null,
+  dragPointerId: null,
+  lastDragAngle: 0,
+  lastDragAt: 0,
+  dragVelocity: 0,
 };

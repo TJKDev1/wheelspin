@@ -55,6 +55,31 @@ test("space spins from page but not from input", async ({ page }) => {
   await expect(page.locator("#result-overlay")).toHaveAttribute("open", "");
 });
 
+test("slow drag repositions wheel without auto-spinning", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  await addEntries(page, ["Alpha", "Beta", "Gamma"]);
+
+  const canvas = page.locator("#wheel-canvas");
+  const box = await canvas.boundingBox();
+  expect(box).not.toBeNull();
+
+  const { x, y, width, height } = box!;
+  const cx = x + width / 2;
+  const cy = y + height / 2;
+
+  await page.mouse.move(cx + width * 0.28, cy);
+  await page.mouse.down();
+  await page.mouse.move(cx + width * 0.24, cy + height * 0.08, { steps: 20 });
+  await page.mouse.up();
+
+  await expect(page.locator("#result-overlay")).not.toHaveAttribute("open", "");
+  await page.getByRole("button", { name: "Spin" }).click();
+  await expect(page.locator("#result-overlay")).toHaveAttribute("open", "");
+  await expect(page.locator("#result-text")).toHaveText(/Alpha|Beta|Gamma/);
+});
+
 test("clears entries and undoes", async ({ page }) => {
   await page.goto("/");
 
@@ -99,9 +124,9 @@ test("share disables when encoded URL would be too long", async ({ page }) => {
   await expect(page.locator("#entries-list .entry-item")).toHaveCount(30);
 
   await expect(page.getByRole("button", { name: "Spin" })).toBeEnabled();
-  await expect(page.locator("#share-btn")).toBeHidden();
+  await expect(page.locator("#share-btn")).toBeDisabled();
   await expect(page.locator("#spin-status")).toHaveText(
-    "Spin is ready. Share is off until you remove a few choices.",
+    "Wheel ready. Share off for this set.",
   );
   await expect(page).toHaveURL(/\/$/);
 });

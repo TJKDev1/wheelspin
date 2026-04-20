@@ -13,7 +13,14 @@ import {
   showResult as showResultUI,
 } from "./result-overlay";
 import { shareWheel as shareWheelUI } from "./share-runtime";
-import { startSpin as startSpinUI, updateMuteButton } from "./spin-runtime";
+import {
+  cancelWheelDrag as cancelWheelDragUI,
+  endWheelDrag as endWheelDragUI,
+  moveWheelDrag as moveWheelDragUI,
+  startSpin as startSpinUI,
+  startWheelDrag as startWheelDragUI,
+  updateMuteButton,
+} from "./spin-runtime";
 import { loadEntriesFromStorage, saveEntriesToStorage } from "./storage-runtime";
 import { state } from "./state";
 import {
@@ -50,6 +57,7 @@ const {
   resultCloseBtn,
   resultOverlay,
   resultShareBtn,
+  shareStatus,
   resultSpinAgain,
   resultText,
   shareBtn,
@@ -62,6 +70,7 @@ const {
   undoToast,
   undoToastText,
   wheelChoicesList,
+  wheelContainer,
   wheelPointer,
 } = dom;
 
@@ -72,11 +81,12 @@ const entryRuntime = createEntryRuntime({
     entryError,
     entriesList,
     entriesPanel,
-    clearAllBtn,
-    shareBtn,
-    resultShareBtn,
-    spinBtn,
-    spinStatus,
+      clearAllBtn,
+      shareBtn,
+      shareStatus,
+      resultShareBtn,
+      spinBtn,
+      spinStatus,
     srAlert,
     wheelChoicesList,
   },
@@ -119,10 +129,38 @@ function drawWheel(): void {
 
 function startSpin(): void {
   startSpinUI({
-    refs: { canvas, spinBtn, wheelPointer, muteBtn },
+    refs: { canvas, wheelContainer, spinBtn, wheelPointer, muteBtn },
     drawWheel,
     showResult,
   });
+}
+
+function startWheelDrag(event: PointerEvent): void {
+  startWheelDragUI(
+    { refs: { canvas, wheelContainer, spinBtn, wheelPointer, muteBtn }, drawWheel },
+    event,
+  );
+}
+
+function moveWheelDrag(event: PointerEvent): void {
+  moveWheelDragUI(
+    { refs: { canvas, wheelContainer, spinBtn, wheelPointer, muteBtn }, drawWheel },
+    event,
+  );
+}
+
+function endWheelDrag(event: PointerEvent): void {
+  endWheelDragUI(
+    { refs: { canvas, wheelContainer, spinBtn, wheelPointer, muteBtn }, drawWheel, showResult },
+    event,
+  );
+}
+
+function cancelWheelDrag(event?: PointerEvent): void {
+  cancelWheelDragUI(
+    { refs: { canvas, wheelContainer, spinBtn, wheelPointer, muteBtn }, drawWheel },
+    event,
+  );
 }
 
 function getWinnerIndex(): number {
@@ -137,7 +175,7 @@ function showResult(): void {
   const winner = state.entries[winnerIndex] ?? state.entries[0] ?? "";
 
   state.restoreFocusOnResultClose = showResultUI(
-    { resultOverlay, resultText, spinBtn, srAlert },
+    { resultOverlay, resultCloseBtn, resultText, spinBtn, srAlert },
     winner,
   );
 }
@@ -196,6 +234,7 @@ function bindEvents(): void {
       restoreBtn,
       dismissRestoreBtn,
       canvas,
+      wheelContainer,
       muteBtn,
     },
     handlers: {
@@ -216,6 +255,10 @@ function bindEvents(): void {
       performRestore,
       dismissRestoreBanner,
       setupCanvas,
+      startWheelDrag,
+      moveWheelDrag,
+      endWheelDrag,
+      cancelWheelDrag,
     },
   });
 }

@@ -2,6 +2,7 @@ import { announceAlert } from "./a11y";
 
 interface ResultOverlayRefs {
   resultOverlay: HTMLDialogElement;
+  resultCloseBtn: HTMLButtonElement;
   resultText: HTMLElement;
   spinBtn: HTMLButtonElement;
   srAlert: HTMLElement;
@@ -17,6 +18,7 @@ export function showResult(
 ): boolean {
   refs.resultText.textContent = winner;
   refs.resultOverlay.showModal();
+  refs.resultCloseBtn.focus();
   announceAlert(refs.srAlert, "The wheel chose: " + winner);
   return true;
 }

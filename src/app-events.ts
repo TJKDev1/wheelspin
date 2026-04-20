@@ -17,6 +17,7 @@ interface AppEventRefs {
   restoreBtn: HTMLButtonElement;
   dismissRestoreBtn: HTMLButtonElement;
   canvas: HTMLCanvasElement;
+  wheelContainer: HTMLElement;
   muteBtn: HTMLButtonElement;
 }
 
@@ -36,6 +37,10 @@ interface AppEventHandlers {
   performRestore: () => void;
   dismissRestoreBanner: () => void;
   setupCanvas: () => void;
+  startWheelDrag: (event: PointerEvent) => void;
+  moveWheelDrag: (event: PointerEvent) => void;
+  endWheelDrag: (event: PointerEvent) => void;
+  cancelWheelDrag: (event?: PointerEvent) => void;
 }
 
 interface BindAppEventsOptions {
@@ -89,6 +94,12 @@ function bindResizeEvents(refs: AppEventRefs, handlers: AppEventHandlers): void 
   );
 }
 
+function isTextEntryTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  const tag = target.tagName;
+  return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable;
+}
+
 export function bindAppEvents(options: BindAppEventsOptions): void {
   const { refs, handlers } = options;
 
@@ -130,17 +141,26 @@ export function bindAppEvents(options: BindAppEventsOptions): void {
 
   refs.clearAllBtn.addEventListener("click", handlers.clearEntries);
   refs.spinBtn.addEventListener("click", handlers.startSpin);
+  refs.wheelContainer.addEventListener("pointerdown", handlers.startWheelDrag);
+  refs.wheelContainer.addEventListener("pointermove", handlers.moveWheelDrag);
+  refs.wheelContainer.addEventListener("pointerup", handlers.endWheelDrag);
+  refs.wheelContainer.addEventListener("pointercancel", handlers.cancelWheelDrag);
 
   document.addEventListener("keydown", (event) => {
     if (event.code !== "Space" && event.key !== " ") return;
-    if (shouldIgnoreGlobalSpace(document.activeElement)) return;
 
     if (refs.resultOverlay.open) {
+      const activeTag = document.activeElement?.tagName;
+      if (activeTag === "INPUT" || activeTag === "TEXTAREA" || activeTag === "SELECT") {
+        return;
+      }
       event.preventDefault();
-      handlers.closeResult();
+      handlers.closeResult({ restoreFocus: false });
       setTimeout(handlers.startSpin, 200);
       return;
     }
+
+    if (shouldIgnoreGlobalSpace(document.activeElement)) return;
 
     event.preventDefault();
     handlers.startSpin();
@@ -156,6 +176,22 @@ export function bindAppEvents(options: BindAppEventsOptions): void {
     if (event.target === refs.resultOverlay) {
       handlers.closeResult();
     }
+  });
+  refs.resultOverlay.addEventListener("keydown", (event) => {
+    if (event.code !== "Space" && event.key !== " ") return;
+    if (isTextEntryTarget(event.target)) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    handlers.closeResult({ restoreFocus: false });
+    setTimeout(handlers.startSpin, 200);
+  });
+  refs.resultOverlay.addEventListener("keyup", (event) => {
+    if (event.code !== "Space" && event.key !== " ") return;
+    if (isTextEntryTarget(event.target)) return;
+
+    event.preventDefault();
+    event.stopPropagation();
   });
   refs.resultOverlay.addEventListener("close", handlers.handleResultOverlayClose);
   refs.resultOverlay.addEventListener("cancel", handlers.markResultOverlayCancel);
@@ -181,6 +217,7 @@ export function bindAppEvents(options: BindAppEventsOptions): void {
   darkModeQuery.addEventListener("change", updateThemeAndDraw);
   hcmQuery.addEventListener("change", updateThemeAndDraw);
 
+  window.addEventListener("blur", () => handlers.cancelWheelDrag());
   window.addEventListener("beforeunload", cleanupSpinRuntime);
   refs.muteBtn.addEventListener("click", () => toggleMute(refs.muteBtn));
 }

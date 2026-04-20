@@ -113,13 +113,7 @@ function drawEmptyWheel(cx: number, cy: number, radius: number): void {
   ctx.font = `500 16px ${wheelTheme.fontBody}`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("Add choices to spin!", cx, cy - 8);
-
-  ctx.font = `400 13px ${wheelTheme.fontBody}`;
-  ctx.fillStyle = wheelTheme.emptyText;
-  ctx.globalAlpha = 0.7;
-  ctx.fillText("Type a choice and press Enter", cx, cy + 16);
-  ctx.globalAlpha = 1;
+  ctx.fillText("Add 2 choices to spin", cx, cy);
 }
 
 function renderWheelToOffscreen(size: number): void {
