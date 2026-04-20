@@ -21,6 +21,14 @@ export interface AppState {
   errorTimer: ReturnType<typeof setTimeout> | null;
 }
 
+function loadMutedPreference(): boolean {
+  try {
+    return localStorage.getItem("wheelspin_muted") === "1";
+  } catch {
+    return false;
+  }
+}
+
 export const state: AppState = {
   entries: [],
   spinning: false,
@@ -30,7 +38,7 @@ export const state: AppState = {
   audioCtx: null,
   lastTickSegment: -1,
   lastTickAt: 0,
-  muted: localStorage.getItem("wheelspin_muted") === "1",
+  muted: loadMutedPreference(),
   pointerResetTimer: null,
   shareOverflow: false,
   restoreFocusOnResultClose: true,

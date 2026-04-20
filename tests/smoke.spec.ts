@@ -7,7 +7,12 @@ import {
   makeLongEntries,
 } from "./helpers";
 
-type TestWindow = Window & typeof globalThis & { __clipboardWrites: string[] };
+type TestWindow = Window &
+  typeof globalThis & {
+    __clipboardWrites: string[];
+    __clipboardMode?: "success" | "reject" | "missing";
+    __storageMode?: "normal" | "throw";
+  };
 
 test.beforeEach(async ({ page }) => {
   await installBrowserMocks(page);
@@ -99,4 +104,53 @@ test("share disables when encoded URL would be too long", async ({ page }) => {
     "Spin is ready. Share is off until you remove a few choices.",
   );
   await expect(page).toHaveURL(/\/$/);
+});
+
+test("boot survives blocked storage access", async ({ page }) => {
+  await page.addInitScript(() => {
+    const testWindow = window as TestWindow;
+    testWindow.__storageMode = "throw";
+  });
+
+  await page.goto("/");
+
+  await expect(page.getByLabel("Add a choice")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Spin" })).toBeDisabled();
+});
+
+test("restore ignores malformed stored entries", async ({ page }) => {
+  await page.goto("/");
+
+  await page.evaluate(() => {
+    localStorage.setItem("wheelspin_entries", JSON.stringify(["Alpha", 42, {}, "  ", "Beta"]));
+  });
+  await page.reload();
+
+  await expect(page.locator("#restore-banner")).toBeVisible();
+  await page.locator("#restore-btn").click();
+  await expect(page.locator("#entries-list .entry-item")).toHaveCount(2);
+
+  const input = page.getByLabel("Add a choice");
+  await input.fill("Gamma");
+  await page.getByRole("button", { name: "Add entry" }).click();
+  await expect(page.locator("#entries-list .entry-item")).toHaveCount(3);
+});
+
+test("result share fallback anchors to result button", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.addInitScript(() => {
+    const testWindow = window as TestWindow;
+    testWindow.__clipboardMode = "reject";
+  });
+
+  await page.goto("/");
+  await addEntries(page, ["Red", "Blue"]);
+  await page.getByRole("button", { name: "Spin" }).click();
+
+  const resultShareButton = page.locator("#result-share-btn");
+  await resultShareButton.click();
+
+  const fallback = page.locator("#result-share-btn + .share-fallback .share-fallback-input");
+  await expect(fallback).toBeVisible();
+  await expect(fallback).toHaveValue(/\?w=Red\|Blue/);
 });

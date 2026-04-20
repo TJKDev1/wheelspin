@@ -1,19 +1,47 @@
 import type { Page } from "@playwright/test";
 
-type TestWindow = Window & typeof globalThis & { __clipboardWrites: string[] };
+type TestWindow = Window &
+  typeof globalThis & {
+    __clipboardWrites: string[];
+    __clipboardMode?: "success" | "reject" | "missing";
+    __storageMode?: "normal" | "throw";
+  };
 
 export async function installBrowserMocks(page: Page): Promise<void> {
   await page.addInitScript(() => {
     const testWindow = window as TestWindow;
     testWindow.__clipboardWrites = [];
+    testWindow.__clipboardMode = "success";
+    testWindow.__storageMode = "normal";
 
     Object.defineProperty(navigator, "clipboard", {
       configurable: true,
-      value: {
-        writeText(value: string) {
-          testWindow.__clipboardWrites.push(value);
-          return Promise.resolve();
-        },
+      get() {
+        if (testWindow.__clipboardMode === "missing") {
+          return undefined;
+        }
+
+        return {
+          writeText(value: string) {
+            testWindow.__clipboardWrites.push(value);
+            if (testWindow.__clipboardMode === "reject") {
+              return Promise.reject(new Error("Clipboard rejected"));
+            }
+            return Promise.resolve();
+          },
+        };
+      },
+    });
+
+    const storageProto = Object.getPrototypeOf(window.localStorage) as Storage;
+    const originalGetItem = storageProto.getItem;
+    Object.defineProperty(storageProto, "getItem", {
+      configurable: true,
+      value(this: Storage, key: string) {
+        if (testWindow.__storageMode === "throw") {
+          throw new Error("Storage blocked");
+        }
+        return originalGetItem.call(this, key);
       },
     });
 

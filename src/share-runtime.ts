@@ -29,7 +29,7 @@ function showCopiedState(btn: HTMLButtonElement): void {
   }, 2000);
 }
 
-function showFallbackInput(shareBtn: HTMLButtonElement, url: string): void {
+function showFallbackInput(triggerBtn: HTMLButtonElement, url: string): void {
   const existing = document.querySelector(".share-fallback");
   if (existing) existing.remove();
 
@@ -44,7 +44,7 @@ function showFallbackInput(shareBtn: HTMLButtonElement, url: string): void {
   input.readOnly = true;
   wrapper.appendChild(input);
 
-  shareBtn.insertAdjacentElement("afterend", wrapper);
+  triggerBtn.insertAdjacentElement("afterend", wrapper);
   input.focus();
   input.select();
 
@@ -109,9 +109,9 @@ export async function shareWheel(options: ShareWheelOptions): Promise<void> {
       showCopiedState(btn);
       showToast(options.refs.shareToast, options.refs.srStatus);
     } else {
-      showFallbackInput(options.refs.shareBtn, url);
+      showFallbackInput(btn, url);
     }
   } catch {
-    showFallbackInput(options.refs.shareBtn, url);
+    showFallbackInput(btn, url);
   }
 }

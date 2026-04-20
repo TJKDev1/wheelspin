@@ -13,7 +13,14 @@ export function parseStoredEntries(raw: string | null): string[] | null {
   try {
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed) || parsed.length === 0) return null;
-    return parsed.slice(0, MAX_ENTRIES);
+
+    const entries = parsed
+      .filter((entry): entry is string => typeof entry === "string")
+      .map((entry) => entry.trim())
+      .filter(Boolean)
+      .slice(0, MAX_ENTRIES);
+
+    return entries.length > 0 ? entries : null;
   } catch {
     return null;
   }
