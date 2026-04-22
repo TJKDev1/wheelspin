@@ -19,6 +19,7 @@ interface WheelTheme {
 }
 
 const DPR = Math.min(window.devicePixelRatio || 1, 2);
+const FORCED_COLORS_QUERY = window.matchMedia("(forced-colors: active)");
 
 let drawPending = false;
 let wheelTheme: WheelTheme = {
@@ -117,45 +118,47 @@ function drawEmptyWheel(cx: number, cy: number, radius: number): void {
 }
 
 function renderWheelToOffscreen(size: number): void {
+  const entriesHash = getEntriesHash(state.entries);
   if (
     !state.offscreen ||
     state.offscreenSize !== size ||
-    state.offscreenEntriesHash !== getEntriesHash(state.entries)
+    state.offscreenEntriesHash !== entriesHash
   ) {
     createOffscreenCanvas(size);
-    state.offscreenEntriesHash = getEntriesHash(state.entries);
+    state.offscreenEntriesHash = entriesHash;
   }
 
-  if (!state.offscreenCtx) return;
+  const offscreenCtx = state.offscreenCtx;
+  if (!offscreenCtx) return;
 
   const cx = size / 2;
   const cy = size / 2;
   const radius = cx - 6;
   const sliceAngle = (2 * Math.PI) / state.entries.length;
 
-  state.offscreenCtx.clearRect(0, 0, size, size);
+  offscreenCtx.clearRect(0, 0, size, size);
 
   state.entries.forEach((entry, i) => {
     const startAngle = i * sliceAngle;
     const endAngle = startAngle + sliceAngle;
     const segColor = getSegmentColor(i);
 
-    state.offscreenCtx!.beginPath();
-    state.offscreenCtx!.moveTo(cx, cy);
-    state.offscreenCtx!.arc(cx, cy, radius, startAngle, endAngle);
-    state.offscreenCtx!.closePath();
-    state.offscreenCtx!.fillStyle = segColor;
-    state.offscreenCtx!.fill();
+    offscreenCtx.beginPath();
+    offscreenCtx.moveTo(cx, cy);
+    offscreenCtx.arc(cx, cy, radius, startAngle, endAngle);
+    offscreenCtx.closePath();
+    offscreenCtx.fillStyle = segColor;
+    offscreenCtx.fill();
 
-    state.offscreenCtx!.beginPath();
-    state.offscreenCtx!.moveTo(cx, cy);
-    state.offscreenCtx!.arc(cx, cy, radius, startAngle, endAngle);
-    state.offscreenCtx!.closePath();
-    state.offscreenCtx!.strokeStyle = wheelTheme.segBorder;
-    state.offscreenCtx!.lineWidth = 2;
-    state.offscreenCtx!.stroke();
+    offscreenCtx.beginPath();
+    offscreenCtx.moveTo(cx, cy);
+    offscreenCtx.arc(cx, cy, radius, startAngle, endAngle);
+    offscreenCtx.closePath();
+    offscreenCtx.strokeStyle = wheelTheme.segBorder;
+    offscreenCtx.lineWidth = 2;
+    offscreenCtx.stroke();
 
-    drawSegmentText(state.offscreenCtx!, startAngle, sliceAngle, radius, size, entry, segColor);
+    drawSegmentText(offscreenCtx, startAngle, sliceAngle, radius, size, entry, segColor);
   });
 }
 
@@ -168,7 +171,7 @@ export function invalidateWheelCache(): void {
 
 export function refreshWheelTheme(): void {
   const styles = getComputedStyle(document.documentElement);
-  const hcm = window.matchMedia("(forced-colors: active)").matches;
+  const hcm = FORCED_COLORS_QUERY.matches;
 
   const segColors: string[] = [];
   for (let i = 1; i <= 12; i += 1) {
@@ -249,40 +252,14 @@ export function drawWheel(canvas: HTMLCanvasElement): void {
     return;
   }
 
-  if (state.spinning && state.offscreen) {
+  renderWheelToOffscreen(size);
+
+  if (state.offscreen) {
     ctx.save();
     ctx.translate(cx, cy);
     ctx.rotate(state.currentAngle);
     ctx.drawImage(state.offscreen, -cx, -cy, size, size);
     ctx.restore();
-  } else {
-    if (!state.spinning) {
-      renderWheelToOffscreen(size);
-    }
-
-    const sliceAngle = (2 * Math.PI) / state.entries.length;
-    state.entries.forEach((entry, i) => {
-      const startAngle = state.currentAngle + i * sliceAngle;
-      const endAngle = startAngle + sliceAngle;
-      const segColor = getSegmentColor(i);
-
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.arc(cx, cy, radius, startAngle, endAngle);
-      ctx.closePath();
-      ctx.fillStyle = segColor;
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.arc(cx, cy, radius, startAngle, endAngle);
-      ctx.closePath();
-      ctx.strokeStyle = wheelTheme.segBorder;
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      drawSegmentText(ctx, startAngle, sliceAngle, radius, size, entry, segColor);
-    });
   }
 
   ctx.beginPath();

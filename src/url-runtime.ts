@@ -4,6 +4,20 @@ import { state } from "./state";
 
 let isSharedLanding = false;
 
+const metaRefs = {
+  description: document.querySelector<HTMLMetaElement>('meta[name="description"]'),
+  canonical: document.querySelector<HTMLLinkElement>('link[rel="canonical"]'),
+  robots: document.querySelector<HTMLMetaElement>('meta[name="robots"]'),
+  googlebot: document.querySelector<HTMLMetaElement>('meta[name="googlebot"]'),
+  ogTitle: document.querySelector<HTMLMetaElement>('meta[property="og:title"]'),
+  ogDescription: document.querySelector<HTMLMetaElement>('meta[property="og:description"]'),
+  ogUrl: document.querySelector<HTMLMetaElement>('meta[property="og:url"]'),
+  twitterTitle: document.querySelector<HTMLMetaElement>('meta[name="twitter:title"]'),
+  twitterDescription: document.querySelector<HTMLMetaElement>('meta[name="twitter:description"]'),
+  twitterImageAlt: document.querySelector<HTMLMetaElement>('meta[name="twitter:image:alt"]'),
+  ogImageAlt: document.querySelector<HTMLMetaElement>('meta[property="og:image:alt"]'),
+} as const;
+
 export function syncURL(srStatus: HTMLElement): void {
   const previousShareOverflow = state.shareOverflow;
 
@@ -91,37 +105,28 @@ export function updatePageMeta(): void {
 
   document.title = title;
 
-  const descriptionMeta = document.querySelector('meta[name="description"]');
-  const canonicalLink = document.querySelector('link[rel="canonical"]');
-  const robotsMeta = document.querySelector('meta[name="robots"]');
-  const googlebotMeta = document.querySelector('meta[name="googlebot"]');
-  const ogTitle = document.querySelector('meta[property="og:title"]');
-  const ogDesc = document.querySelector('meta[property="og:description"]');
-  const ogUrl = document.querySelector('meta[property="og:url"]');
-  const twitterTitle = document.querySelector('meta[name="twitter:title"]');
-  const twitterDesc = document.querySelector('meta[name="twitter:description"]');
-  const twitterImageAlt = document.querySelector('meta[name="twitter:image:alt"]');
-  const ogImageAlt = document.querySelector('meta[property="og:image:alt"]');
   const canonicalUrl = "https://www.wheelspin.cc/";
   const shareUrl = buildShareURL() || canonicalUrl;
   const imageAlt = hasEntries
     ? `WheelSpin random picker for ${preview}${suffix}.`
     : "WheelSpin logo mark with four blue and orange wheel segments.";
 
-  if (descriptionMeta) descriptionMeta.setAttribute("content", description);
-  if (canonicalLink) canonicalLink.setAttribute("href", canonicalUrl);
+  if (metaRefs.description) metaRefs.description.setAttribute("content", description);
+  if (metaRefs.canonical) metaRefs.canonical.setAttribute("href", canonicalUrl);
   const robotsContent = isSharedLanding && hasEntries
     ? "noindex,follow,max-image-preview:large"
     : "index,follow,max-image-preview:large";
-  if (robotsMeta) {
-    robotsMeta.setAttribute("content", robotsContent);
+  if (metaRefs.robots) {
+    metaRefs.robots.setAttribute("content", robotsContent);
   }
-  if (googlebotMeta) googlebotMeta.setAttribute("content", robotsContent);
-  if (ogTitle) ogTitle.setAttribute("content", title);
-  if (ogDesc) ogDesc.setAttribute("content", description);
-  if (ogUrl) ogUrl.setAttribute("content", hasEntries ? shareUrl : canonicalUrl);
-  if (ogImageAlt) ogImageAlt.setAttribute("content", imageAlt);
-  if (twitterTitle) twitterTitle.setAttribute("content", title);
-  if (twitterDesc) twitterDesc.setAttribute("content", description);
-  if (twitterImageAlt) twitterImageAlt.setAttribute("content", imageAlt);
+  if (metaRefs.googlebot) metaRefs.googlebot.setAttribute("content", robotsContent);
+  if (metaRefs.ogTitle) metaRefs.ogTitle.setAttribute("content", title);
+  if (metaRefs.ogDescription) metaRefs.ogDescription.setAttribute("content", description);
+  if (metaRefs.ogUrl) metaRefs.ogUrl.setAttribute("content", hasEntries ? shareUrl : canonicalUrl);
+  if (metaRefs.ogImageAlt) metaRefs.ogImageAlt.setAttribute("content", imageAlt);
+  if (metaRefs.twitterTitle) metaRefs.twitterTitle.setAttribute("content", title);
+  if (metaRefs.twitterDescription) {
+    metaRefs.twitterDescription.setAttribute("content", description);
+  }
+  if (metaRefs.twitterImageAlt) metaRefs.twitterImageAlt.setAttribute("content", imageAlt);
 }

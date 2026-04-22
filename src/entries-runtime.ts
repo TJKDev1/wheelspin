@@ -60,12 +60,14 @@ function updateWheelDescription(refs: EntryRuntimeRefs): void {
       : "Empty wheel. Add choices to spin.";
   refs.canvas.setAttribute("aria-label", description);
 
-  refs.wheelChoicesList.innerHTML = "";
+  const fragment = document.createDocumentFragment();
   state.entries.forEach((entry) => {
     const item = document.createElement("li");
     item.textContent = entry;
-    refs.wheelChoicesList.appendChild(item);
+    fragment.appendChild(item);
   });
+
+  refs.wheelChoicesList.replaceChildren(fragment);
 }
 
 function updateShareState(refs: EntryRuntimeRefs): void {
@@ -112,20 +114,24 @@ function updateShareState(refs: EntryRuntimeRefs): void {
   }
 }
 
-function updateLimitIndicator(refs: EntryRuntimeRefs): void {
-  let indicator = refs.entriesPanel.querySelector<HTMLElement>(".entries-limit");
-  if (!indicator) {
-    indicator = document.createElement("p");
-    indicator.className = "entries-limit";
-    indicator.setAttribute("aria-live", "polite");
-    refs.entriesPanel.appendChild(indicator);
-  }
-  indicator.textContent = `${state.entries.length} / 30`;
-  indicator.classList.toggle("visible", state.entries.length >= 20);
+function createLimitIndicator(entriesPanel: HTMLElement): HTMLElement {
+  const indicator = document.createElement("p");
+  indicator.className = "entries-limit";
+  indicator.setAttribute("aria-live", "polite");
+  entriesPanel.appendChild(indicator);
+  return indicator;
 }
 
 export function createEntryRuntime(options: EntryRuntimeOptions): EntryRuntime {
   const { refs } = options;
+  const limitIndicator =
+    refs.entriesPanel.querySelector<HTMLElement>(".entries-limit") ??
+    createLimitIndicator(refs.entriesPanel);
+
+  function updateLimitIndicator(): void {
+    limitIndicator.textContent = `${state.entries.length} / 30`;
+    limitIndicator.classList.toggle("visible", state.entries.length >= 20);
+  }
 
   function showEntryError(message: string): void {
     clearTimeout(state.errorTimer ?? undefined);
@@ -145,7 +151,7 @@ export function createEntryRuntime(options: EntryRuntimeOptions): EntryRuntime {
   function renderEntries(focusIndex?: number): void {
     options.invalidateWheelCache();
 
-    refs.entriesList.innerHTML = "";
+    const fragment = document.createDocumentFragment();
     state.entries.forEach((entry, index) => {
       const item = document.createElement("li");
       item.className = "entry-item";
@@ -171,8 +177,10 @@ export function createEntryRuntime(options: EntryRuntimeOptions): EntryRuntime {
         '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
 
       item.append(dot, label, removeBtn);
-      refs.entriesList.appendChild(item);
+      fragment.appendChild(item);
     });
+
+    refs.entriesList.replaceChildren(fragment);
 
     if (focusIndex !== undefined) {
       const nextItem = refs.entriesList.children[Math.min(focusIndex, state.entries.length - 1)];
@@ -185,7 +193,7 @@ export function createEntryRuntime(options: EntryRuntimeOptions): EntryRuntime {
     }
 
     updateShareState(refs);
-    updateLimitIndicator(refs);
+    updateLimitIndicator();
     updateWheelDescription(refs);
   }
 
@@ -204,8 +212,7 @@ export function createEntryRuntime(options: EntryRuntimeOptions): EntryRuntime {
     if (state.entries.length >= 30) {
       shakeInput(refs.entryInput);
       showEntryError("You have reached the 30-choice limit.");
-      const indicator = document.querySelector(".entries-limit");
-      if (indicator) indicator.classList.add("visible");
+      limitIndicator.classList.add("visible");
       return false;
     }
 

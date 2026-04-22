@@ -100,6 +100,11 @@ function isTextEntryTarget(target: EventTarget | null): boolean {
   return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable;
 }
 
+function restartSpinAfterResult(handlers: Pick<BindAppEventsOptions["handlers"], "closeResult" | "startSpin">): void {
+  handlers.closeResult({ restoreFocus: false });
+  setTimeout(handlers.startSpin, 200);
+}
+
 export function bindAppEvents(options: BindAppEventsOptions): void {
   const { refs, handlers } = options;
 
@@ -155,8 +160,7 @@ export function bindAppEvents(options: BindAppEventsOptions): void {
         return;
       }
       event.preventDefault();
-      handlers.closeResult({ restoreFocus: false });
-      setTimeout(handlers.startSpin, 200);
+      restartSpinAfterResult(handlers);
       return;
     }
 
@@ -168,8 +172,7 @@ export function bindAppEvents(options: BindAppEventsOptions): void {
 
   refs.resultCloseBtn.addEventListener("click", () => handlers.closeResult());
   refs.resultSpinAgain.addEventListener("click", () => {
-    handlers.closeResult({ restoreFocus: false });
-    setTimeout(handlers.startSpin, 200);
+    restartSpinAfterResult(handlers);
   });
 
   refs.resultOverlay.addEventListener("click", (event) => {
@@ -183,8 +186,7 @@ export function bindAppEvents(options: BindAppEventsOptions): void {
 
     event.preventDefault();
     event.stopPropagation();
-    handlers.closeResult({ restoreFocus: false });
-    setTimeout(handlers.startSpin, 200);
+    restartSpinAfterResult(handlers);
   });
   refs.resultOverlay.addEventListener("keyup", (event) => {
     if (event.code !== "Space" && event.key !== " ") return;

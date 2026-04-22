@@ -81,12 +81,12 @@ const entryRuntime = createEntryRuntime({
     entryError,
     entriesList,
     entriesPanel,
-      clearAllBtn,
-      shareBtn,
-      shareStatus,
-      resultShareBtn,
-      spinBtn,
-      spinStatus,
+    clearAllBtn,
+    shareBtn,
+    shareStatus,
+    resultShareBtn,
+    spinBtn,
+    spinStatus,
     srAlert,
     wheelChoicesList,
   },
@@ -98,6 +98,8 @@ const entryRuntime = createEntryRuntime({
   hideUndoToast,
   showUndoToast,
 });
+
+const spinRuntimeRefs = { canvas, wheelContainer, spinBtn, wheelPointer, muteBtn };
 
 function init(): void {
   setupCanvas();
@@ -128,39 +130,23 @@ function drawWheel(): void {
 }
 
 function startSpin(): void {
-  startSpinUI({
-    refs: { canvas, wheelContainer, spinBtn, wheelPointer, muteBtn },
-    drawWheel,
-    showResult,
-  });
+  startSpinUI({ refs: spinRuntimeRefs, drawWheel, showResult });
 }
 
 function startWheelDrag(event: PointerEvent): void {
-  startWheelDragUI(
-    { refs: { canvas, wheelContainer, spinBtn, wheelPointer, muteBtn }, drawWheel },
-    event,
-  );
+  startWheelDragUI({ refs: spinRuntimeRefs, drawWheel }, event);
 }
 
 function moveWheelDrag(event: PointerEvent): void {
-  moveWheelDragUI(
-    { refs: { canvas, wheelContainer, spinBtn, wheelPointer, muteBtn }, drawWheel },
-    event,
-  );
+  moveWheelDragUI({ refs: spinRuntimeRefs, drawWheel }, event);
 }
 
 function endWheelDrag(event: PointerEvent): void {
-  endWheelDragUI(
-    { refs: { canvas, wheelContainer, spinBtn, wheelPointer, muteBtn }, drawWheel, showResult },
-    event,
-  );
+  endWheelDragUI({ refs: spinRuntimeRefs, drawWheel, showResult }, event);
 }
 
 function cancelWheelDrag(event?: PointerEvent): void {
-  cancelWheelDragUI(
-    { refs: { canvas, wheelContainer, spinBtn, wheelPointer, muteBtn }, drawWheel },
-    event,
-  );
+  cancelWheelDragUI({ refs: spinRuntimeRefs, drawWheel }, event);
 }
 
 function getWinnerIndex(): number {

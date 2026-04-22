@@ -19,6 +19,7 @@ type DragRuntimeOptions = Pick<SpinRuntimeOptions, "refs" | "drawWheel">;
 const TWO_PI = 2 * Math.PI;
 const FLICK_THRESHOLD = 1.2;
 const MAX_FLICK_VELOCITY = 22;
+const REDUCED_MOTION_QUERY = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 function normaliseAngle(angle: number): number {
   return ((angle % TWO_PI) + TWO_PI) % TWO_PI;
@@ -218,7 +219,7 @@ function launchSpin(options: SpinRuntimeOptions, angularVelocity: number): void 
   options.refs.spinBtn.setAttribute("aria-label", "Spinning");
   options.refs.wheelContainer.classList.add("spinning");
 
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  if (REDUCED_MOTION_QUERY.matches) {
     options.drawWheel();
     finishSpin(options);
     options.showResult();
@@ -231,7 +232,7 @@ function launchSpin(options: SpinRuntimeOptions, angularVelocity: number): void 
 export function startSpin(options: SpinRuntimeOptions): void {
   if (state.spinning || state.dragging || state.entries.length < 2) return;
 
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  if (REDUCED_MOTION_QUERY.matches) {
     state.currentAngle = Math.random() * TWO_PI;
     launchSpin(options, 0);
     return;
