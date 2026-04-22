@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Not Found | WheelSpin</title>
+    <meta
+      name="description"
+      content="This WheelSpin page could not be found. Return home to build a wheel and spin again."
+    />
+    <meta name="robots" content="noindex,follow" />
+    <meta name="theme-color" content="#f6f4f0" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-48x48.png" sizes="48x48" type="image/png" />
+    <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
+    <link rel="icon" href="/favicon-16x16.png" sizes="16x16" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <style>
+      @font-face {
+        font-family: "Sora";
+        src: url("/fonts/sora-700-latin.woff2") format("woff2");
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "Sora";
+        src: url("/fonts/sora-800-latin.woff2") format("woff2");
+        font-style: normal;
+        font-weight: 800;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "Figtree";
+        src: url("/fonts/figtree-400-latin.woff2") format("woff2");
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: "Figtree";
+        src: url("/fonts/figtree-500-latin.woff2") format("woff2");
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+      }
+
+      :root {
+        color-scheme: light;
+        --blue-300: oklch(70% 0.12 240);
+        --blue-500: oklch(52% 0.18 240);
+        --blue-600: oklch(44% 0.16 240);
+        --orange-400: oklch(68% 0.18 45);
+        --orange-500: oklch(62% 0.2 40);
+        --orange-600: oklch(54% 0.18 38);
+        --neutral-50: oklch(97% 0.005 240);
+        --neutral-100: oklch(94% 0.008 240);
+        --neutral-200: oklch(89% 0.01 240);
+        --neutral-400: oklch(65% 0.01 240);
+        --neutral-600: oklch(38% 0.01 240);
+        --neutral-800: oklch(20% 0.015 240);
+        --neutral-900: oklch(13% 0.015 240);
+        --color-bg: oklch(97% 0.008 60);
+        --color-surface: oklch(99% 0.003 60);
+        --color-surface-hover: var(--neutral-100);
+        --color-text: var(--neutral-800);
+        --color-text-secondary: var(--neutral-600);
+        --color-text-muted: var(--neutral-400);
+        --color-border: var(--neutral-200);
+        --color-primary: var(--blue-500);
+        --color-primary-hover: var(--blue-600);
+        --color-accent: var(--orange-400);
+        --color-accent-hover: var(--orange-500);
+        --color-accent-press: var(--orange-600);
+        --color-on-accent: var(--neutral-900);
+        --color-shadow: oklch(20% 0.02 240 / 0.18);
+        --color-shadow-accent: oklch(62% 0.2 40 / 0.3);
+        --wheel-center-fill: oklch(97% 0.008 240);
+        --wheel-center-stroke: oklch(82% 0.012 240);
+        --wheel-pointer: var(--neutral-800);
+        --font-display: "Sora", system-ui, sans-serif;
+        --font-body: "Figtree", system-ui, sans-serif;
+        --radius-lg: 1.5rem;
+        --radius-full: 999px;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-5: 1.25rem;
+        --space-6: 1.5rem;
+        --space-8: 2rem;
+        --space-10: 2.5rem;
+        --duration-fast: 140ms;
+        --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          color-scheme: dark;
+          --color-bg: oklch(15% 0.01 60);
+          --color-surface: oklch(20% 0.01 60);
+          --color-surface-hover: oklch(28% 0.012 240);
+          --color-text: var(--neutral-100);
+          --color-text-secondary: oklch(80% 0.012 240);
+          --color-text-muted: oklch(58% 0.02 240);
+          --color-border: oklch(28% 0.012 240);
+          --color-on-accent: var(--neutral-900);
+          --wheel-center-fill: oklch(20% 0.008 240);
+          --wheel-center-stroke: oklch(38% 0.015 240);
+          --wheel-pointer: var(--neutral-100);
+          --color-shadow: oklch(0% 0 0 / 0.35);
+        }
+      }
+
+      *, *::before, *::after { box-sizing: border-box; }
+      html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        font-family: var(--font-body);
+        color: var(--color-text);
+        background:
+          radial-gradient(circle at top, color-mix(in oklch, var(--color-primary) 8%, transparent), transparent 42%),
+          linear-gradient(180deg, color-mix(in oklch, var(--color-accent) 2%, var(--color-bg)), var(--color-bg));
+      }
+
+      a { color: inherit; }
+      :focus-visible { outline: 3px solid var(--blue-300); outline-offset: 3px; }
+
+      .not-found-page {
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(1rem, 4vw, 2rem);
+      }
+
+      .not-found-layout {
+        width: min(1120px, 100%);
+        display: grid;
+        grid-template-columns: minmax(0, 32rem) minmax(280px, 1fr);
+        gap: clamp(1.5rem, 5vw, 2.5rem);
+        align-items: center;
+      }
+
+      .not-found-card,
+      .not-found-visual {
+        position: relative;
+        background: color-mix(in oklch, var(--color-accent) 1%, var(--color-surface));
+        border: 1.5px solid var(--color-border);
+        border-radius: calc(var(--radius-lg) + 0.5rem);
+        box-shadow: 0 24px 80px var(--color-shadow);
+      }
+
+      .not-found-card { padding: clamp(1.25rem, 4vw, 2rem); }
+      .not-found-brand {
+        width: fit-content;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-bottom: clamp(2.25rem, 8vw, 5rem);
+        text-decoration: none;
+      }
+
+      .brand-mark-primary { fill: var(--color-primary); }
+      .brand-mark-accent { fill: var(--color-accent); }
+      .brand-mark-center { fill: var(--color-surface); }
+      .logo {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+      .logo-accent { color: var(--color-accent); }
+      .not-found-copy { max-width: 32ch; }
+      .not-found-eyebrow {
+        margin: 0 0 var(--space-3);
+        font-family: var(--font-display);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--color-text-secondary);
+      }
+      .not-found-title {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: clamp(2.4rem, 7vw, 4.5rem);
+        font-weight: 800;
+        letter-spacing: -0.05em;
+        line-height: 0.94;
+      }
+      .not-found-text {
+        margin: var(--space-4) 0 0;
+        max-width: 34ch;
+        font-size: 1rem;
+        line-height: 1.7;
+        color: var(--color-text-secondary);
+      }
+
+      .not-found-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+        margin-top: var(--space-6);
+      }
+      .not-found-primary,
+      .not-found-secondary {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-3) var(--space-5);
+        border-radius: var(--radius-full);
+        font-weight: 700;
+        text-decoration: none;
+        transition:
+          transform var(--duration-fast) var(--ease-out-quart),
+          background var(--duration-fast) var(--ease-out-quart),
+          border-color var(--duration-fast) var(--ease-out-quart),
+          box-shadow var(--duration-fast) var(--ease-out-quart);
+      }
+      .not-found-primary {
+        background: var(--color-accent);
+        color: var(--color-on-accent);
+        box-shadow: 0 2px 0 var(--color-accent-press), 0 4px 12px var(--color-shadow-accent);
+      }
+      .not-found-primary:hover {
+        background: var(--color-accent-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 3px 0 var(--color-accent-press), 0 8px 18px var(--color-shadow-accent);
+      }
+      .not-found-secondary {
+        border: 1.5px solid var(--color-border);
+        background: var(--color-surface);
+      }
+      .not-found-secondary:hover {
+        background: var(--color-surface-hover);
+        border-color: color-mix(in oklch, var(--color-primary) 28%, var(--color-border));
+        transform: translateY(-1px);
+      }
+
+      .not-found-notes {
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+        padding: 0;
+        margin: var(--space-8) 0 0;
+      }
+      .not-found-notes li {
+        padding: 0.72rem 0.95rem;
+        border-radius: var(--radius-full);
+        background: color-mix(in oklch, var(--color-primary) 5%, var(--color-surface));
+        border: 1px solid color-mix(in oklch, var(--color-primary) 16%, var(--color-border));
+        color: var(--color-text-secondary);
+        font-size: 0.94rem;
+      }
+
+      .not-found-visual {
+        padding: clamp(1.25rem, 4vw, 2rem);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .not-found-wheel-frame {
+        position: relative;
+        width: min(100%, 26rem);
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+      }
+      .not-found-wheel-frame::before {
+        content: "";
+        position: absolute;
+        inset: 7%;
+        border-radius: 50%;
+        background: radial-gradient(circle, color-mix(in oklch, var(--color-primary) 8%, transparent), transparent 70%);
+        filter: blur(18px);
+      }
+      .not-found-wheel {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 1.5px solid color-mix(in oklch, var(--color-primary) 14%, var(--color-border));
+        background:
+          conic-gradient(
+            from -45deg,
+            color-mix(in oklch, var(--color-primary) 22%, var(--color-surface)) 0deg 90deg,
+            color-mix(in oklch, var(--color-accent) 26%, var(--color-surface)) 90deg 180deg,
+            color-mix(in oklch, var(--color-primary) 10%, var(--color-surface)) 180deg 270deg,
+            color-mix(in oklch, var(--color-accent) 14%, var(--color-surface)) 270deg 360deg
+          );
+        box-shadow: inset 0 0 0 12px color-mix(in oklch, var(--color-surface) 82%, transparent);
+      }
+      .not-found-wheel::before {
+        content: "";
+        position: absolute;
+        inset: 13%;
+        border-radius: 50%;
+        border: 1px dashed color-mix(in oklch, var(--color-primary) 24%, var(--color-border));
+      }
+      .not-found-wheel-center {
+        position: absolute;
+        inset: 50% auto auto 50%;
+        width: 20%;
+        aspect-ratio: 1;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: var(--wheel-center-fill);
+        border: 1.5px solid var(--wheel-center-stroke);
+        box-shadow: 0 10px 25px var(--color-shadow);
+      }
+      .not-found-pointer {
+        position: absolute;
+        top: 2%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 16px solid transparent;
+        border-right: 16px solid transparent;
+        border-top: 30px solid var(--wheel-pointer);
+        filter: drop-shadow(0 2px 4px var(--color-shadow));
+        z-index: 2;
+      }
+      .not-found-wheel-label {
+        position: absolute;
+        font-family: var(--font-display);
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+      .not-found-wheel-label-top { top: 14%; left: 50%; transform: translateX(-50%); }
+      .not-found-wheel-label-right { right: 13%; top: 50%; transform: translateY(-50%); }
+      .not-found-wheel-label-bottom { bottom: 14%; left: 50%; transform: translateX(-50%); }
+      .not-found-wheel-label-left { left: 13%; top: 50%; transform: translateY(-50%); }
+      .not-found-caption {
+        margin: var(--space-5) 0 0;
+        color: var(--color-text-muted);
+        font-size: 0.94rem;
+        text-align: center;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .not-found-wheel { animation: not-found-wheel-idle 18s linear infinite; }
+      }
+      @keyframes not-found-wheel-idle {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      @media (max-width: 840px) {
+        .not-found-layout { grid-template-columns: 1fr; }
+        .not-found-card { order: 1; }
+        .not-found-visual { order: 0; }
+        .not-found-wheel-frame { width: min(100%, 20rem); }
+      }
+
+      @media (max-width: 480px) {
+        .not-found-page { padding: 0.75rem; }
+        .not-found-card, .not-found-visual { border-radius: var(--radius-lg); }
+        .not-found-actions { flex-direction: column; }
+        .not-found-primary, .not-found-secondary { width: 100%; }
+      }
+
+      @media (forced-colors: active) {
+        :focus-visible { outline: 2px solid Highlight; }
+        .not-found-card,
+        .not-found-visual,
+        .not-found-secondary,
+        .not-found-notes li,
+        .not-found-wheel,
+        .not-found-wheel-center {
+          forced-color-adjust: none;
+          background: Canvas;
+          color: CanvasText;
+          border-color: CanvasText;
+          box-shadow: none;
+        }
+        .not-found-primary {
+          forced-color-adjust: none;
+          background: Highlight;
+          color: HighlightText;
+          box-shadow: none;
+        }
+        .not-found-pointer { border-top-color: CanvasText; filter: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="not-found-page">
+      <div class="not-found-layout">
+        <section class="not-found-card" aria-labelledby="not-found-title">
+          <a class="not-found-brand" href="/" aria-label="Go to WheelSpin home">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <path class="brand-mark-primary" d="M16 16L30 16A14 14 0 0 1 16 30Z" />
+              <path class="brand-mark-accent" d="M16 16L16 30A14 14 0 0 1 2 16Z" />
+              <path class="brand-mark-primary" d="M16 16L2 16A14 14 0 0 1 16 2Z" />
+              <circle class="brand-mark-center" cx="16" cy="16" r="3.5" />
+            </svg>
+            <span class="logo">Wheel<span class="logo-accent">Spin</span></span>
+          </a>
+
+          <div class="not-found-copy">
+            <p class="not-found-eyebrow">404 · wrong segment</p>
+            <h1 id="not-found-title" class="not-found-title">Page not found.</h1>
+            <p class="not-found-text">
+              Link missed landing spot. Main wheel still ready for quick picks, team
+              calls, lunch debates, giveaways.
+            </p>
+          </div>
+
+          <div class="not-found-actions">
+            <a class="not-found-primary" href="/">Go to wheel</a>
+            <a class="not-found-secondary" href="/">Start new wheel</a>
+          </div>
+
+          <ul class="not-found-notes" aria-label="Popular ways to use WheelSpin">
+            <li>Lunch spots</li>
+            <li>Team topics</li>
+            <li>Classroom picks</li>
+          </ul>
+        </section>
+
+        <aside class="not-found-visual" aria-hidden="true">
+          <div class="not-found-wheel-frame">
+            <div class="not-found-pointer"></div>
+            <div class="not-found-wheel">
+              <span class="not-found-wheel-label not-found-wheel-label-top">Home</span>
+              <span class="not-found-wheel-label not-found-wheel-label-right">Share</span>
+              <span class="not-found-wheel-label not-found-wheel-label-bottom">Spin</span>
+              <span class="not-found-wheel-label not-found-wheel-label-left">404</span>
+              <div class="not-found-wheel-center"></div>
+            </div>
+          </div>
+          <p class="not-found-caption">Clean reset. One click back to wheel.</p>
+        </aside>
+      </div>
+    </main>
+  </body>
+</html>
